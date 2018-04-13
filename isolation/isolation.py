@@ -219,9 +219,9 @@ class Board(object):
         """Returns the utility of the current game state from the perspective
         of the specified player.
 
-                    /  +infinity,   "player" wins
+                   |   +infinity,   "player" wins
         utility =  |   -infinity,   "player" loses
-                    \          0,    otherwise
+                   |        0,    otherwise
 
         Parameters
         ----------

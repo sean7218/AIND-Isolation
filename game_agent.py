@@ -340,5 +340,5 @@ class AlphaBetaPlayer(IsolationPlayer):
 if __name__ == "__main__":
     from isolation import Board
     player1 = MinimaxPlayer()
-
+    
     print("hello")
