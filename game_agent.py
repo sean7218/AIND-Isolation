@@ -3,12 +3,15 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
-
+from heuristic import weighted_chances_heuristic
 
 class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
     pass
 
+class Timeout(Exception):
+    """Subclass base exception for code calrity. """
+    pass
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -35,7 +38,8 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # TODO: finish this function!
-    raise NotImplementedError
+    # raise NotImplementedError
+    return weighted_chances_heuristic(game, player)
 
 
 def custom_score_2(game, player):
@@ -252,10 +256,10 @@ class AlphaBetaPlayer(IsolationPlayer):
             Board coordinates corresponding to a legal move; may return
             (-1, -1) if there are no available legal moves.
         """
-        self.time_left = time_left
-
         # TODO: finish this function!
         raise NotImplementedError
+
+
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
