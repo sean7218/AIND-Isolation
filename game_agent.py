@@ -217,8 +217,33 @@ class MinimaxPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         # TODO: finish this function!
-        raise NotImplementedError
+        return self.mm_move(game, depth)[0]
 
+    def active_player(self, game):
+        return game.active_player == self
+    
+    def mm_move(self, game, depth):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        
+        if depth == 0:
+            return (game.get_player_location(self), self.score(game, self))
+        
+        value, func, best_move = None, None, (-1, -1)
+
+        if self.active_player(game):
+            func, value = max, float("-inf")
+        else:
+            func, value = min, float("inf")
+
+        for move in game.get_legal_moves():
+            next_ply = game.forcast_move(move)
+            score = self.mm_move(next_ply, depth -1)[1]
+            if func(value, score) == score:
+                best_move = move
+                value = score
+            
+        return (best_move, score)
 
 class AlphaBetaPlayer(IsolationPlayer):
     """Game-playing agent that chooses a move using iterative deepening minimax
@@ -315,5 +340,5 @@ class AlphaBetaPlayer(IsolationPlayer):
 if __name__ == "__main__":
     from isolation import Board
     player1 = MinimaxPlayer()
-    
+
     print("hello")
