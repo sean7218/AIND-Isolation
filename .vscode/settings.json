@@ -1,3 +1,11 @@
 {
-    "python.pythonPath": "C:\\Users\\sean7218\\Miniconda3\\envs\\sema\\python.exe"
+    "python.pythonPath": "/Users/mpb15sz/miniconda/envs/aind/bin/python",
+    "python.unitTest.unittestArgs": [
+        "-v",
+        "-s",
+        "./tests",
+        "-p",
+        "test*.py"
+    ],
+    "python.unitTest.unittestEnabled": true
 }

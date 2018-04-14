@@ -237,12 +237,14 @@ class MinimaxPlayer(IsolationPlayer):
             func, value = min, float("inf")
 
         for move in game.get_legal_moves():
-            next_ply = game.forcast_move(move)
+            next_ply = game.forecast_move(move)
+            #print("next play: ",next_ply)
             score = self.mm_move(next_ply, depth -1)[1]
+            #print("score: ", score)
             if func(value, score) == score:
                 best_move = move
                 value = score
-            
+        print("score: ", score)
         return (best_move, score)
 
 class AlphaBetaPlayer(IsolationPlayer):
@@ -282,9 +284,17 @@ class AlphaBetaPlayer(IsolationPlayer):
             (-1, -1) if there are no available legal moves.
         """
         # TODO: finish this function!
-        raise NotImplementedError
+        self.time_left = time_left
+        move = (-1, -1)
+        for i in range(1, 10000):
+            try:
+                move = self.alphabeta(game, i)
+            except SearchTimeout:
+                break
+        return move
 
-
+    def active_player(self, game):
+        return game.active_player == self
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -335,10 +345,79 @@ class AlphaBetaPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         # TODO: finish this function!
-        raise NotImplementedError
+        return self.ab(game, depth)[0]
+
+    def ab(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+        """
+        again this just wraps the old code logic that returned a tuple of (move, score)
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+        
+        if depth == 0:
+            return (-1, -1), self.score(game, self)
+
+        value, func, best_move, is_alpha = None, None, (-1, -1), True
+
+        if self.active_player(game):
+            value = float("-inf")
+            func = max
+            is_alpha = True
+        else:
+            value = float("inf")
+            func = min
+            is_alpha = False
+
+        for move in game.get_legal_moves():
+            next_ply = game.forecast_move(move)
+            score = self.ab(next_ply, depth - 1, alpha, beta)[1]
+            if score == func(value, score):
+                value = score
+                best_move = move
+            if is_alpha:
+                if value >= beta:
+                    return best_move, value
+                else:
+                    alpha = max(value, alpha)
+            else:
+                if value <= alpha:
+                    return best_move, value
+                else:
+                    beta = min(value, beta)
+
+        return best_move, value
+
 
 if __name__ == "__main__":
     from isolation import Board
     player1 = MinimaxPlayer()
-    
-    print("hello")
+    player2 = AlphaBetaPlayer()
+
+    game = Board(player1, player2)
+
+    # the board at row 0, column 5; display the resulting board state.  Note
+    # that the .apply_move() method changes the calling object in-place.
+    game.apply_move((2, 3))
+    game.apply_move((0, 5))
+    print(game.to_string())
+
+    # players take turns moving on the board, so player1 should be next to move
+    assert(player1 == game.active_player)
+
+    # get a list of the legal moves available to the active player
+    print(game.get_legal_moves())
+
+    # get a successor of the current state by making a copy of the board and
+    # applying a move. Notice that this does NOT change the calling object
+    # (unlike .apply_move()).
+    new_game = game.forecast_move((1, 1))
+    assert(new_game.to_string() != game.to_string())
+    print("\nOld state:\n{}".format(game.to_string()))
+    print("\nNew state:\n{}".format(new_game.to_string()))
+
+    # play the remainder of the game automatically -- outcome can be "illegal
+    # move", "timeout", or "forfeit"
+    winner, history, outcome = game.play()
+    print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
+    print(game.to_string())
+    print("Move history:\n{!s}".format(history))

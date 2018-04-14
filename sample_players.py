@@ -196,6 +196,8 @@ class GreedyPlayer():
         if not legal_moves:
             return (-1, -1)
         _, move = max([(self.score(game.forecast_move(m), self), m) for m in legal_moves])
+        _ = [ print("score: ",(self.score(game.forecast_move(m),self), m)) for m in legal_moves]
+
         return move
 
 
