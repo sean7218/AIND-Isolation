@@ -5,7 +5,7 @@ and include the results in your report.
 import random
 
 
-def aggressive_heuristic(game, player):
+def aggro_heuristic(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -18,7 +18,7 @@ def aggressive_heuristic(game, player):
     return my_moves - 1.5 * opponent_moves
 
 
-def defensive_heuristic(game, player):
+def control_heuristic(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -31,45 +31,7 @@ def defensive_heuristic(game, player):
     return 1.5 * my_moves - opponent_moves
 
 
-def maximizing_win_chances_heuristic(game, player):
-    if game.is_loser(player):
-        return float("-inf")
-
-    if game.is_winner(player):
-        return float("inf")
-
-    my_moves = 1.0 * len(game.get_legal_moves(player))
-    opponent_moves = len(game.get_legal_moves(game.get_opponent(player)))
-
-    if my_moves == 0:
-        return float("-inf")
-
-    if opponent_moves == 0:
-        return float("inf")
-
-    return my_moves/opponent_moves
-
-
-def minimizing_losing_chances_heuristic(game, player):
-    if game.is_loser(player):
-        return float("-inf")
-
-    if game.is_winner(player):
-        return float("inf")
-
-    my_moves = len(game.get_legal_moves(player))
-    opponent_moves = 1.0 * len(game.get_legal_moves(game.get_opponent(player)))
-
-    if my_moves == 0:
-        return float("-inf")
-
-    if opponent_moves == 0:
-        return float("inf")
-
-    return -opponent_moves/my_moves
-
-
-def chances_heuristic(game, player):
+def midrange_heuristic(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -82,7 +44,7 @@ def chances_heuristic(game, player):
     return my_moves*my_moves - opponent_moves*opponent_moves
 
 
-def weighted_chances_heuristic(game, player):
+def combo_heuristic(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -91,11 +53,12 @@ def weighted_chances_heuristic(game, player):
 
     my_moves = len(game.get_legal_moves(player))
     opponent_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    total_moves = my_moves + opponent_moves
 
-    return my_moves*my_moves - 1.5*opponent_moves*opponent_moves
+    #return my_moves*my_moves - 1.5*opponent_moves*opponent_moves
+    return 
 
-
-def weighted_chances_heuristic_2(game, player):
+def combo_heuristic_2(game, player):
     if game.is_loser(player):
         return float("-inf")
 
@@ -137,7 +100,7 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return weighted_chances_heuristic(game, player)
+    return combo_heuristic(game, player)
 
 
 def custom_score_2(game, player):
@@ -162,7 +125,7 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return maximizing_win_chances_heuristic(game, player)
+    return control_heuristic(game, player)
 
 
 def custom_score_3(game, player):
@@ -187,7 +150,7 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    return defensive_heuristic(game, player)
+    return aggro_heuristic(game, player)
 
 
 class IsolationPlayer:
@@ -393,7 +356,6 @@ class AlphaBetaPlayer(IsolationPlayer):
             Board coordinates corresponding to a legal move; may return
             (-1, -1) if there are no available legal moves.
         """
-        # TODO: finish this function!
         self.time_left = time_left
         legal_moves = game.get_legal_moves(self)
         if len(legal_moves) > 0:
@@ -401,8 +363,6 @@ class AlphaBetaPlayer(IsolationPlayer):
         else:
             best_move = (-1, -1)
         try:
-            # The try/except block will automatically catch the exception
-            # raised when the timer is about to expire.
             depth = 1
             while True:
                 current_move = self.alphabeta(game, depth)
